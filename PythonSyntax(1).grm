@@ -1,0 +1,75 @@
+"Start Symbol" = <Program>
+
+! -------------------------------------------------
+! Character Sets
+! -------------------------------------------------
+
+{ID Head}      = {Letter} + [_]
+{ID Tail}      = {Alphanumeric} + [_]
+{String Chars} = {Printable} + {HT} - ["\]
+
+! -------------------------------------------------
+! Terminals
+! -------------------------------------------------
+
+Identifier    = {ID Head}{ID Tail}*
+StringLiteral = '"' ( {String Chars} | '\' {Printable} )* '"'
+Integer       = {digit}+
+
+! -------------------------------------------------
+! Rules
+! -------------------------------------------------
+
+<Program> ::= <StatementList>
+
+<StatementList> ::= <Statement>
+                 | <Statement> <StatementList>
+
+<Statement> ::= <Assignment> 
+             | <IfStatement> | <Loop>
+              
+<Assignment> ::= Identifier '=' <Expression> 
+
+<IfStatement> ::= 'if' <Expression> ':' <StatementList> <ElseIfStatement>
+
+<ElseIfStatement> ::= 'elif' <Expression> ':' <StatementList> <ElseIfStatement>
+                   | <ElseStatement>
+                   |
+
+<ElseStatement> ::= 'else' ':' <StatementList>
+                                
+<Loop> ::= <ForLoop>
+        |  <WhileLoop> 
+
+<ForLoop> ::= 'for' Identifier 'in' 'range' '(' Integer ')' ':' <StatementList> 
+                               
+<WhileLoop> ::= 'while' <Expression> ':' <StatementList> 
+             
+<Expression>  ::= <Add Exp> 
+               |  <Add Exp> '>'  <Expression> 
+               |  <Add Exp> '<'  <Expression> 
+               |  <Add Exp> '<=' <Expression> 
+               |  <Add Exp> '>=' <Expression>
+               |  <Add Exp> '==' <Expression>    !Equal
+               |  <Add Exp> '<>' <Expression>    !Not equal
+                 
+
+<Add Exp>     ::= <Mult Exp>
+               |  <Mult Exp> '+' <Add Exp>
+               |  <Mult Exp> '-' <Add Exp>
+                  
+
+<Mult Exp>    ::= <Negate Exp>
+               |  <Negate Exp> '*' <Mult Exp> 
+               |  <Negate Exp> '/' <Mult Exp>
+               |  <Negate Exp> '//' <Mult Exp>
+               |  <Negate Exp> '%' <Mult Exp>
+                
+               
+<Negate Exp>  ::= '-' <Value> 
+               |  <Value> 
+
+<Value>       ::= Identifier
+               |Integer
+               |StringLiteral
+               |  '(' <Expression> ')'
